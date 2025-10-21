@@ -19,9 +19,13 @@ LATIN_REGEX = re.compile(r'[a-zA-Z]')
 HINDI_REGEX = re.compile(r'[\u0900-\u097F]')
 BENGALI_REGEX = re.compile(r'[\u0980-\u09FF]')
 
-BATCH_SIZE=32
-LR=1e-4
+BATCH_SIZE=32 
+LEARNING_RATE=1e-4
 NUM_EPOCHS=10
+EMBEDDING_DIM = 256
+HIDDEN_DIM = 512
+NUM_LAYERS = 2
+DROPOUT = 0.3
 
 if MODEL_TYPE == 'LSTM':
     pass

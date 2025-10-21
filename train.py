@@ -88,7 +88,7 @@ def initialize_dataset(cloud, data_ratio):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Neural Machine Translation pipeline.")
 
-    parser.add_argument('--cloud', type=bool, default=False)
+    parser.add_argument('--cloud', action='store_true')
     parser.add_argument('--data_ratio',type=float, default=0.1)
     
     args = parser.parse_args()

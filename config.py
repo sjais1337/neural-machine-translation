@@ -5,9 +5,12 @@ DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 TRAIN_DATA_PATH="data/train_data1.json"
 TEST_DATA_PATH="data/val_data1.json"
+C_TRAIN_DATA_PATH="drive/MyDrive/train_data1.json"
+C_TEST_DATA_PATH="drive/MyDrive/val_data1.json"
 VAL_DATA_PATH=None
 PREFIX="nmt"
 MODEL_TYPE="LSTM"
+
 
 SOURCE_LANG='English'
 TARGET_LANG='Hindi'

@@ -5,14 +5,22 @@ import json
 import random 
 
 from tokenizers.spe import SP_BPE
+import config
+
 
 class NMTDataset(Dataset):
     def __init__(self, data_path, tokenizer, source_lang, target_lang,
-                data_key='Train', split=None, split_ratio=0.1, random_seed=41):
+                data_key='Train', data_ratio=1.0, split=None, split_ratio=0.1, random_seed=41):
         print(f"Loading tokenizer and data for {source_lang}-{target_lang}.")
 
         self.tokenizer = tokenizer
         pairs = self._load_data(data_path, source_lang, target_lang, data_key)
+
+        if data_ratio < 1.0:
+            num = int(len(pairs)*data_ratio)
+            pairs=pairs[:num]
+
+            print(f"Scaled down the dataset to {data_ratio*100}% of the dataset.")
 
         if split in ('train', 'val'):
             if not pairs:

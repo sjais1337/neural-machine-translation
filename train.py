@@ -9,8 +9,8 @@ from tokenizers.spe import SP_BPE
 from src.data_loader import NMTDataset, collate 
 import argparse
 from src.engine import train_one_epoch, evaluate, translate_sentence
-from src.models.model import Encoder, Decoder, Seq2Seq_LSTM
-
+from src.models.new import BiDirectionalEncoder, BahdanauAttention, DenseResidualDecoder, Seq2Seq
+from src.models.transformer import Transformer 
 import random
 
 tokenizer = SP_BPE.load(config.PREFIX)
@@ -86,6 +86,7 @@ def initialize_dataset(cloud, data_ratio):
     return train_dataset, test_dataset, val_dataset, train_loader, test_loader, val_loader
 
 if __name__ == "__main__":
+    print(config.DEVICE)
     parser = argparse.ArgumentParser(description="Neural Machine Translation pipeline.")
 
     parser.add_argument('--cloud', action='store_true')
@@ -101,10 +102,29 @@ if __name__ == "__main__":
     
     if config.MODEL_TYPE == 'LSTM':
         print("Initializing LSTM model...")
-        enc = Encoder(INPUT_DIM, config.EMBEDDING_DIM, config.HIDDEN_DIM, config.NUM_LAYERS, config.DROPOUT)
-        dec = Decoder(OUTPUT_DIM, config.EMBEDDING_DIM, config.HIDDEN_DIM, config.NUM_LAYERS, config.DROPOUT)
-        model = Seq2Seq_LSTM(enc, dec, config.DEVICE).to(config.DEVICE)
+
+        encoder = BiDirectionalEncoder(INPUT_DIM, config.EMBEDDING_DIM, config.HIDDEN_DIM, config.DROPOUT)
+        attention = BahdanauAttention(config.HIDDEN_DIM)
+        decoder = DenseResidualDecoder(OUTPUT_DIM, config.EMBEDDING_DIM, config.HIDDEN_DIM, config.DROPOUT, attention)
+        
+        # Wrap them in the main Seq2Seq model
+        model = Seq2Seq(encoder, decoder, config.DEVICE).to(config.DEVICE)
     
+    if config.MODEL_TYPE == 'TRANSFORMER':
+        print("Initializing Transformer model...")
+        model = Transformer(
+            src_vocab_size=INPUT_DIM,
+            tgt_vocab_size=OUTPUT_DIM,
+            d_model=config.D_MODEL,  # Add to config
+            n_heads=config.N_HEADS,  # Add to config
+            n_encoder_layers=config.N_ENCODER_LAYERS,  # Add to config
+            n_decoder_layers=config.N_DECODER_LAYERS,  # Add to config
+            d_ff=config.D_FF,  # Add to config
+            max_len=config.MAX_LEN,  # Add to config
+            dropout=config.DROPOUT,
+            device=config.DEVICE
+        ).to(config.DEVICE)
+
     elif config.MODEL_TYPE == 'GRU':
         # from src.models.model import Seq2Seq_GRU
         # model = Seq2Seq_GRU(...)

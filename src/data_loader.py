@@ -63,7 +63,7 @@ class NMTDataset(Dataset):
 
             if source:
                 pairs.append((source, target))
-
+        
         print(f"Loaded {len(pairs)} sentence pairs.")
         return pairs
 
